@@ -1,0 +1,148 @@
+<?php
+
+
+/**
+ * @file
+ * Contains realtor_text_to_select.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ * 
+ * Alters the exposed filter form on the property type pages
+ */
+
+ function custom_text_to_select_form_views_exposed_form_alter(array &$form, FormStateInterface $form_state, string $form_id) {
+  
+
+  if ($form['#id'] == 'views-exposed-form-properties-page-1') {
+
+    // Attach a library that includes the AJAX and JS functionalities.
+    $form['#attached']['library'][] = 'custom_text_to_select/custom_text_to_select_js';
+
+
+    /**
+    * Helper function to get second select options based on the first select value.
+    */
+    function _custom_text_to_select_get_max_options($selected_value) {
+      // Define different sets of options based on the first select's value.
+      $options = [];
+      switch ($selected_value) {
+
+        case 'All':
+          $options = [
+            'All' => t('All Properties'),
+          ];
+          break;
+
+        case '124':
+          $options = [
+            100 => t('$100 USD/night'),
+            250 => t('$250 USD/night'), 
+            500 => t('$500 USD/night'), 
+            750 => t('$750 USD/night'), 
+            1000 => t('$1,000 USD/night'), 
+            1500 => t('$1,500 USD/night'), 
+            2500 => t('$2,500 USD/night'), 
+            5000 => t('$5,000 USD/night'), 
+            7500 => t('$7,500 USD/night'), 
+            10000 => t('$10,000 USD/night')
+          ];
+          break;
+
+        case '11':
+          $options = [
+            100 => t('$100 USD/month'),
+            250 => t('$250 USD/month'), 
+            500 => t('$500 USD/month'), 
+            750 => t('$750 USD/month'), 
+            1000 => t('$1,000 USD/month'), 
+            1500 => t('$1,500 USD/month'), 
+            2500 => t('$2,500 USD/month'), 
+            5000 => t('$5,000 USD/month'), 
+            7500 => t('$7,500 USD/month'), 
+            10000 => t('$10,000 USD/month')
+          ];
+          break;
+
+        case '10':
+          $options = [
+            100000 => t('$100,000'),
+            250000 => t('$250,000 USD'),
+            500000 => t('$500,000 USD'),
+            750000 => t('$750,000 USD'),
+            1000000 => t('$1,000,000 USD'),
+            5000000 => t('$5,000,000 USD'),
+            10000000 => t('$10,000,000 USD'),
+            25000000 => t('$25,000,000 USD'),
+          ];
+          break;
+
+        default:
+          $options = [
+            'All' => t('All'),
+          ];
+      }
+
+      return $options;
+    }
+
+    /**
+     * Callback function to update the second select field.
+     */
+    function custom_text_to_select_get_update_max_options(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
+      // Return the updated second select field to replace its content via AJAX
+      print_r($form['field_property_sale_price_value']);
+      return $form['field_property_sale_price_value'];
+    }
+
+    // If the Status select exist
+    if(isset($form['field_property_st_target_id']) ){
+
+      // Change the -Any- option to Status
+      $form['field_property_st_target_id']['#options']['All'] = 'Status';
+      $form['field_property_st_target_id']['#ajax'] = [
+        'event' => 'change',
+        'callback' => 'custom_text_to_select_get_update_max_options',
+        'wrapper' => 'max-price-wrapper',
+        'progress' => [
+                'type' => 'throbber',
+                'message' => t('Changing options....'),
+            ],
+      ];
+    }
+
+    // If the Property type select exist
+    if(isset($form['field_property_category_target_id']) ){
+    
+      // Change the -Any- option to Any
+      $form['field_property_category_target_id']['#options']['All'] = 'Property Type';
+    }
+
+    // If the property sale price field exist, change it to a select type
+    if(isset($form['field_property_sale_price_value'])){
+
+      // Start rebuilding form
+      $form['field_property_sale_price_value'] = [
+        '#label' => '',
+        '#markup' => '',
+        '#type' => 'select',
+        '#multiple' => False,
+        '#empty_option' => t('Max Price'),
+        '#size' => 1,
+        '#prefix' => '<div id="max-price-wrapper">',  // AJAX wrapper.
+        '#suffix' => '</div>',
+        '#options' => _custom_text_to_select_get_max_options($form_state->getValue('field_property_st_target_id')),
+      ];
+
+    }
+
+  } 
+
+}
+
+?>
+
+
