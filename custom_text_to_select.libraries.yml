@@ -1,0 +1,8 @@
+custom_text_to_select_js:
+  version: 1.x
+  js:
+    js/custom_text_to_select_js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupal.ajax
