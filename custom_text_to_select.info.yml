@@ -1,0 +1,8 @@
+name: 'Text To Select'
+type: module
+description: 'Converts Views Exposed Form Textfields To Select Options and Creates Dynamic Select options'
+core_version_requirement: ^9
+version: 1.0
+package: Custom
+dependencies:
+  - drupal:core
