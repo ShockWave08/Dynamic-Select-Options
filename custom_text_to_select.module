@@ -38,13 +38,6 @@ use Drupal\Core\Form\FormStateInterface;
       ];
     }
 
-    // If the Property type select exist
-    if(isset($form['field_property_category_target_id']) ){
-    
-      // Change the -Any- option to Any
-      $form['field_property_category_target_id']['#options']['All'] = 'Property Type';
-    }
-
     // If the property sale price field exist, change it to a select type
     if(isset($form['field_property_sale_price_value'])){
 
