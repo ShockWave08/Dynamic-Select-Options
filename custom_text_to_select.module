@@ -27,6 +27,8 @@ use Drupal\Core\Form\FormStateInterface;
 
       // Change the -Any- option to Status
       $form['field_property_st_target_id']['#options']['All'] = 'Status';
+
+      // Use ajax to make changes to Price options
       $form['field_property_st_target_id']['#ajax'] = [
         'event' => 'change',
         'callback' => 'custom_text_to_select_get_update_max_options',
@@ -41,7 +43,7 @@ use Drupal\Core\Form\FormStateInterface;
     // If the property sale price field exist, change it to a select type
     if(isset($form['field_property_sale_price_value'])){
 
-      // Start rebuilding form
+      // Rebuild Select Field
       $form['field_property_sale_price_value'] = [
         '#label' => '',
         '#markup' => '',
