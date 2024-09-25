@@ -94,7 +94,6 @@ use Drupal\Core\Form\FormStateInterface;
      */
     function custom_text_to_select_get_update_max_options(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
       // Return the updated second select field to replace its content via AJAX
-      print_r($form['field_property_sale_price_value']);
       return $form['field_property_sale_price_value'];
     }
 
@@ -114,12 +113,6 @@ use Drupal\Core\Form\FormStateInterface;
       ];
     }
 
-    // If the Property type select exist
-    if(isset($form['field_property_category_target_id']) ){
-    
-      // Change the -Any- option to Any
-      $form['field_property_category_target_id']['#options']['All'] = 'Property Type';
-    }
 
     // If the property sale price field exist, change it to a select type
     if(isset($form['field_property_sale_price_value'])){
