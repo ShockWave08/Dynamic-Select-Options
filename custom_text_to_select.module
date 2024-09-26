@@ -131,7 +131,7 @@ function _custom_text_to_select_get_max_options($selected_value) {
 /**
  * Callback function to update the second select field.
  */
-function custom_text_to_select_get_update_max_options(array &$form, FormStateInterface $form_state) {
+function custom_text_to_select_get_update_max_options(array &$form, FormStateInterface &$form_state) {
   // Return the updated second select field to replace its content via AJAX
   return $form['field_property_sale_price_value'];
 }
