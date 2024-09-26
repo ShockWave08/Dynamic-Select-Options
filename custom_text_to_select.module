@@ -3,10 +3,14 @@
 
 /**
  * @file
- * Contains realtor_text_to_select.module.
+ * Contains custom_text_to_select.module.
  */
 
+ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Render\Element\Ajax;
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -22,26 +26,27 @@ use Drupal\Core\Form\FormStateInterface;
     // Attach a library that includes the AJAX and JS functionalities.
     $form['#attached']['library'][] = 'custom_text_to_select/custom_text_to_select_js';
 
-    // If the Status select exist
-    if(isset($form['field_property_st_target_id']) ){
-
       // Change the -Any- option to Status
       $form['field_property_st_target_id']['#options']['All'] = 'Status';
 
       // Use ajax to make changes to Price options
       $form['field_property_st_target_id']['#ajax'] = [
+        // Set focus to the textfield after hitting enter.
+        'disable-refocus' => FALSE,
+        // Trigger when user hits enter key.
         'event' => 'change',
-        'callback' => 'custom_text_to_select_get_update_max_options',
-        'wrapper' => 'max-price-wrapper',
+        'callback' => 'custom_text_to_select_update_prices',
+        'wrapper' => 'field-property-sale-price-value',
         'progress' => [
-                'type' => 'throbber',
-                'message' => t('Verifying entry...'),
-            ],
+            'type' => 'throbber',
+            'message' => t('Verifying entry...'),
+        ],
       ];
-    }
 
-    // If the property sale price field exist, change it to a select type
-    if(isset($form['field_property_sale_price_value'])){
+    
+      // Change the -Any- option to Any
+      $form['field_property_category_target_id']['#options']['All'] = 'Property Type';
+
 
       // Rebuild Select Field
       $form['field_property_sale_price_value'] = [
@@ -51,24 +56,35 @@ use Drupal\Core\Form\FormStateInterface;
         '#multiple' => False,
         '#empty_option' => t('Max Price'),
         '#size' => 1,
-        '#prefix' => '<div id="max-price-wrapper">',  // AJAX wrapper.
+        '#attributes' => [
+          'id' => 'field-property-sale-price-value',
+        ],
+        '#prefix' => '<div id="field-property-sale-price-value">', 
         '#suffix' => '</div>',
         '#options' => _custom_text_to_select_get_max_options($form_state->getValue('field_property_st_target_id')),
       ];
-
-    }
 
   } 
 
 }
 
 /**
+ * Callback function to update the second select field.
+ */
+function custom_text_to_select_update_prices(array &$form, FormStateInterface $form_state) {
+
+
+  // Return the updated second select field to replace its content via AJAX
+  return $form['field_property_sale_price_value'];
+}
+
+/**
 * Helper function to get second select options based on the first select value.
 */
-function _custom_text_to_select_get_max_options($selected_value) {
+function _custom_text_to_select_get_max_options($selected_option) {
   // Define different sets of options based on the first select's value.
   $options = [];
-  switch ($selected_value) {
+  switch ($selected_option) {
 
     case 'All':
       $options = [
@@ -121,22 +137,11 @@ function _custom_text_to_select_get_max_options($selected_value) {
 
     default:
       $options = [
-        'All' => t('All'),
+        'All' => t('Select a Status option'),
       ];
   }
 
   return $options;
 }
 
-/**
- * Callback function to update the second select field.
- */
-function custom_text_to_select_get_update_max_options(array &$form, FormStateInterface &$form_state) {
-  // Return the updated second select field to replace its content via AJAX
-  return $form['field_property_sale_price_value'];
-}
-
-
 ?>
-
-
